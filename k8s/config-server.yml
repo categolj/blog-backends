@@ -26,6 +26,7 @@ data:
     spring.cloud.config.server.default-label=scs
     security.basic.enabled=true
     management.security.enabled=true
+    loggig.level.org.apache.catalina.filters.RequestDumperFilter=WARN
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
