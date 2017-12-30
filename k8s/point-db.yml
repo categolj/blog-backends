@@ -60,7 +60,7 @@ spec:
         - name: MYSQL_DATABASE
           valueFrom:
             secretKeyRef:
-              name: blog-db-secret
+              name: point-db-secret
               key: mysql-database
         ports:
         - containerPort: 3306
