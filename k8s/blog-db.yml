@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: point-db-pvc
+  name: blog-db-pvc
   namespace: blog
 spec:
   accessModes:
@@ -14,21 +14,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: point-db-service
+  name: blog-db-service
   namespace: blog
   labels:
-    app: point-db
+    app: blog-db
 spec:
   ports:
   - port: 3306
   selector:
-    app: point-db
+    app: blog-db
   type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: point-db
+  name: blog-db
   namespace: blog
 spec:
   strategy:
@@ -36,29 +36,32 @@ spec:
   template:
     metadata:
       labels:
-        app: point-db
+        app: blog-db
     spec:
       containers:
       - image: mysql:5.7
-        name: point-db
+        name: blog-db
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: point-db-secret
+              name: blog-db-secret
               key: mysql-root-password
         - name: MYSQL_USER
           valueFrom:
             secretKeyRef:
-              name: point-db-secret
+              name: blog-db-secret
               key: mysql-user
         - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: point-db-secret
+              name: blog-db-secret
               key: mysql-password
         - name: MYSQL_DATABASE
-          value: point
+          valueFrom:
+            secretKeyRef:
+              name: blog-db-secret
+              key: mysql-database
         ports:
         - containerPort: 3306
           name: mysql
@@ -68,4 +71,4 @@ spec:
       volumes:
       - name: mysql-storage
         persistentVolumeClaim:
-          claimName: point-db-pvc
+          claimName: blog-db-pvc
