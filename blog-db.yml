@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: blog-db-pvc
+  namespace: blog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-db-service
+  namespace: blog
+  labels:
+    app: blog-db
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: blog-db
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: blog-db
+  namespace: blog
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: blog-db
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: blog-db
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: blog-db-secret
+              key: mysql-root-password
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: blog-db-secret
+              key: mysql-user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: blog-db-secret
+              key: mysql-password
+        - name: MYSQL_DATABASE
+          value: blog
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: blog-db-pvc

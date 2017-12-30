@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: point-db-pvc
+  namespace: blog
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: point-db-service
+  namespace: blog
+  labels:
+    app: point-db
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: point-db
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: point-db
+  namespace: blog
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: point-db
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: point-db
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: point-db-secret
+              key: mysql-root-password
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: point-db-secret
+              key: mysql-user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: point-db-secret
+              key: mysql-password
+        - name: MYSQL_DATABASE
+          value: point
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: point-db-pvc
