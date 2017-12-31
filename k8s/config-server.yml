@@ -26,6 +26,7 @@ data:
     spring.cloud.config.server.default-label=scs
     security.basic.enabled=true
     management.security.enabled=true
+    server.tomcat.max-connections=16
     logging.level.root=WARN
     logging.level.org.apache.catalina.filters.RequestDumperFilter=WARN
 ---
@@ -55,6 +56,8 @@ spec:
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: kubernetes
+        - name: _JAVA_OPTIONS
+          value: "-Xmx64M -Xss1M -XX:MaxMetaspaceSize=48M -XX:ReservedCodeCacheSize=32M -XX:CompressedClassSpaceSize=16M -XX:MaxDirectMemorySize=16M -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Duser.timezone=Asia/Tokyo -Duser.language=ja -Duser.country=JP"
         - name: SECURITY_USER_NAME
           valueFrom:
             secretKeyRef:
@@ -72,6 +75,11 @@ spec:
         - name: application-config
           mountPath: "/config"
           readOnly: true
+        resources:
+          limits:
+            memory: "192Mi"
+          requests:
+            memory: "192Mi"
         readinessProbe:
           httpGet:
             path: /health
@@ -86,7 +94,7 @@ spec:
             port: 8888
           initialDelaySeconds: 60
           timeoutSeconds: 15
-          periodSeconds: 10
+          periodSeconds: 30
           failureThreshold: 3
       volumes:
       - name: application-config
