@@ -57,7 +57,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: kubernetes
         - name: _JAVA_OPTIONS
-          value: "-Xmx64M -Xss1M -XX:MaxMetaspaceSize=48M -XX:ReservedCodeCacheSize=32M -XX:CompressedClassSpaceSize=16M -XX:MaxDirectMemorySize=16M -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Duser.timezone=Asia/Tokyo -Duser.language=ja -Duser.country=JP"
+          value: "-Xmx96M -Xss1M -XX:MaxMetaspaceSize=80M -XX:ReservedCodeCacheSize=32M -XX:CompressedClassSpaceSize=16M -XX:MaxDirectMemorySize=16M -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Duser.timezone=Asia/Tokyo -Duser.language=ja -Duser.country=JP"
         - name: SECURITY_USER_NAME
           valueFrom:
             secretKeyRef:
@@ -77,9 +77,9 @@ spec:
           readOnly: true
         resources:
           limits:
-            memory: "192Mi"
+            memory: "256Mi"
           requests:
-            memory: "192Mi"
+            memory: "256Mi"
         readinessProbe:
           httpGet:
             path: /health
