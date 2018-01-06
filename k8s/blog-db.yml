@@ -25,6 +25,21 @@ spec:
     app: blog-db
   type: NodePort
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-db-config
+  namespace: blog
+  labels:
+    app: blog-db
+data:
+  charset.cnf: |-
+    [mysqld]
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_general_ci
+    [client]
+    default-character-set=utf8mb4
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -68,7 +83,16 @@ spec:
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
+        - name: db-config
+          mountPath: /etc/mysql/conf.d
+          readOnly: true
       volumes:
       - name: mysql-storage
         persistentVolumeClaim:
           claimName: blog-db-pvc
+      - name: db-config
+        configMap:
+          name: blog-db-config
+          items:
+          - key: charset.cnf
+            path: charset.cnf
