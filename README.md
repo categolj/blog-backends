@@ -3,6 +3,7 @@ backend services for dev with k8s
 
 
 ```
+kubectl create namespace blog
 kubectl apply -f https://github.com/kubernetes/minikube/raw/479ca10c75f6d73a71543627fd1fbe627600f5ec/deploy/addons/storage-provisioner/storage-provisioner.yaml
 kubectl apply -f https://github.com/kubernetes/minikube/raw/479ca10c75f6d73a71543627fd1fbe627600f5ec/deploy/addons/storageclass/storageclass.yaml
 
