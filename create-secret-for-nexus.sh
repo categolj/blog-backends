@@ -9,8 +9,8 @@ if [ "$ns" == "" ];then
   ns=blog
 fi
 
-kubectl -n $ns create secret docker-registry harbor-secret \
-    --docker-server=harbor-13-78-118-111.sslip.io \
+kubectl -n $ns create secret docker-registry regstry-ikam \
+    --docker-server=registry.ik.am \
     --docker-username=${username} \
     --docker-password=${password} \
     --docker-email=${email}
